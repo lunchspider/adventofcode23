@@ -30,6 +30,11 @@ fn main() {
             2 => solutions::day1::second(input_file),
             _ => unreachable!(),
         },
+        2 => match args.part {
+            1 => solutions::day2::first(input_file),
+            2 => solutions::day2::second(input_file),
+            _ => unreachable!(),
+        },
         _ => panic!("day count wrong"),
     }
 }
