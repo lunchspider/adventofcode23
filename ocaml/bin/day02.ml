@@ -1,8 +1,6 @@
-let file = "../inputs/2.txt"
-
-(*let print_list = List.iter (Printf.printf "%s\n");*)
-
 type round = { mutable red : int; mutable blue: int; mutable green: int}
+
+let result = ref 0;;
 
 let handle_round round_info r = 
     let r = List.map String.trim (String.split_on_char ' ' r) in
@@ -20,20 +18,30 @@ let parse_round rounds =
     let round_info  = { red = 0; blue = 0; green = 0;} in
     let x = List.map String.trim (String.split_on_char ',' rounds) in
     List.iter (handle_round round_info) x;
-    Printf.printf "red = %d , blue = %d, green = %d " round_info.red round_info.blue round_info.green
+    if round_info.red <= 12 && round_info.green <= 13 && round_info.blue <= 14 then
+        true
+    else false
 
-let parse_game str = 
+
+let parse_game game_number str = 
+    let is_game_possible = ref true in
     let x = List.map String.trim (String.split_on_char ':' str) in 
     match x with
         | [] -> ();
-        | _::y -> List.iter parse_round (List.map (String.split_on_char ';') y |> List.flatten)
+        | _::y -> let rounds = (List.map (String.split_on_char ';') y |> List.flatten) in
+        List.iter (fun x -> is_game_possible := !is_game_possible && parse_round x) rounds;
+    if !is_game_possible then
+        result := !result + game_number
 
-let rec parse_file channel =  
+let rec parse_file game_number channel =  
     match input_line channel with
-        | line -> parse_game line;
-        parse_file channel
+    | line -> parse_game game_number line;
+        parse_file (game_number + 1) channel
     | exception End_of_file ->
      close_in channel
 
 
-let () = parse_file @@ open_in file;;
+let first file = (open_in file |> parse_file 1); !result;;
+
+let () = 
+    Printf.printf "%d" @@ first "../inputs/2.txt";;
