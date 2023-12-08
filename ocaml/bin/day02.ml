@@ -15,33 +15,55 @@ let handle_round round_info r =
         | _ -> ()
 
 let parse_round rounds = 
-    let round_info  = { red = 0; blue = 0; green = 0;} in
+    let round_info = { red = 0; blue = 0; green = 0} in
     let x = List.map String.trim (String.split_on_char ',' rounds) in
     List.iter (handle_round round_info) x;
-    if round_info.red <= 12 && round_info.green <= 13 && round_info.blue <= 14 then
-        true
-    else false
+    round_info
 
 
-let parse_game game_number str = 
-    let is_game_possible = ref true in
+let parse_game str = 
     let x = List.map String.trim (String.split_on_char ':' str) in 
     match x with
-        | [] -> ();
+        | [] -> [];
         | _::y -> let rounds = (List.map (String.split_on_char ';') y |> List.flatten) in
-        List.iter (fun x -> is_game_possible := !is_game_possible && parse_round x) rounds;
-    if !is_game_possible then
-        result := !result + game_number
+    List.map parse_round rounds
 
-let rec parse_file game_number channel =  
+let round_check x = x.red <= 12 && x.green <= 13 && x.blue <= 14
+
+let find_max_round m x =
+    m.green <- max m.green x.green;
+    m.blue <- max m.blue x.blue;
+    m.red <- max m.red x.red;;
+
+
+let rec first game_number channel = 
+    let is_ok = ref true in
     match input_line channel with
-    | line -> parse_game game_number line;
-        parse_file (game_number + 1) channel
+    | line -> 
+        let rounds = parse_game line in
+        List.iter (fun x -> is_ok := !is_ok && round_check x) rounds;
+        if !is_ok then begin
+            result := !result + game_number;
+        end;
+        first (game_number + 1) channel
     | exception End_of_file ->
-     close_in channel
+     close_in channel;
+        !result;;
 
-
-let first file = (open_in file |> parse_file 1); !result;;
+let rec second game_number channel =
+    match input_line channel with
+    | line  -> 
+        let rounds = parse_game line in
+        let m  = List.nth rounds 0 in
+        List.iter (find_max_round m) rounds;
+        let pow = m.red * m.green * m.blue in
+        result := !result + pow;
+        second (game_number + 1) channel
+    | exception End_of_file ->
+        close_in channel;
+        !result;;
 
 let () = 
-    Printf.printf "%d" @@ first "../inputs/2.txt";;
+    Printf.printf "first: %d\n" @@ first 1 @@ open_in "../inputs/2.txt";;
+    result := 0;
+    Printf.printf "second: %d\n" @@ second 1 @@ open_in "../inputs/2.txt";;

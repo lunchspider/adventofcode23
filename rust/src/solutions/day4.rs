@@ -41,7 +41,6 @@ pub fn first(input_file: PathBuf) {
 }
 
 pub fn second(input_file: PathBuf) {
-    let mut result = 0;
     let lines = std::fs::read_to_string(input_file)
         .unwrap()
         .lines()
