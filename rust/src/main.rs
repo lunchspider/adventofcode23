@@ -65,6 +65,11 @@ fn main() {
             2 => solutions::day8::second(input_file),
             _ => unreachable!(),
         },
+        9 => match args.part {
+            1 => solutions::day9::first(input_file),
+            2 => solutions::day9::second(input_file),
+            _ => unreachable!(),
+        },
         _ => panic!("day count wrong"),
     }
 }
