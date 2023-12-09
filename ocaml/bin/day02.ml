@@ -4,9 +4,7 @@ let result = ref 0;;
 
 let handle_round round_info r = 
     let r = List.map String.trim (String.split_on_char ' ' r) in
-    let num = (match (List.nth r 0 |> int_of_string_opt) with 
-        | Some x -> x 
-        | None -> 0) in
+    let num = List.nth r 0 |> int_of_string_opt |> Option.value ~default:0 in
     let color = List.nth r 1 in
     match color with
         | "green" -> round_info.green <- max round_info.green num
