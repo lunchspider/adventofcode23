@@ -106,9 +106,6 @@ pub fn second(input_file: PathBuf) {
         }
         result.push(steps);
     }
-    let mut r = result[0];
-    for i in result.iter().skip(1) {
-        r = lcm(r, *i);
-    }
+    let r = result.iter().fold(1, |acc, x| lcm(acc, *x));
     dbg!(r);
 }

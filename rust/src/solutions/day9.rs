@@ -35,13 +35,7 @@ pub fn first(input_file: PathBuf) {
     let res = lines
         .iter()
         .map(build_tree)
-        .map(|x| {
-            let mut result = 0;
-            for i in x {
-                result += i.last().unwrap();
-            }
-            result
-        })
+        .map(|x| x.iter().fold(0, |acc, i| acc + i.last().unwrap()))
         .sum::<i64>();
     dbg!(res);
 }
@@ -51,13 +45,7 @@ pub fn second(input_file: PathBuf) {
     let res = lines
         .iter()
         .map(build_tree)
-        .map(|x| {
-            let mut result = 0;
-            for i in x.iter().rev() {
-                result = i.first().unwrap() - result;
-            }
-            result
-        })
+        .map(|x| x.iter().fold(0, |acc, i| i.first().unwrap() - acc))
         .sum::<i64>();
     dbg!(res);
 }
